@@ -128,7 +128,7 @@ stat_box_data <- function(y, upper_limit = max(box_swept$mean_b) * 1.15) {
 fig2b_l <- ggplot(box_swept,aes(x=genotype,y=mean_b)) + 
   geom_jitter(shape=21,position=position_jitter(0.2),size=0.5,fill="black") +
   geom_boxplot(aes(fill=genotype),outlier.shape = NA,alpha=0.5) + 
-  scale_fill_manual(values=c("gold2","plum4")) + 
+  scale_fill_manual(values=c("gold2","plum4"),labels = c("swept", "divergent")) + 
   theme_bw() + facet_grid(.~day) +
   theme(axis.text.y =  element_text(size=12,  color = "black"),
         axis.text.x =  element_blank(),
@@ -141,6 +141,7 @@ fig2b_l <- ggplot(box_swept,aes(x=genotype,y=mean_b)) +
         strip.background = element_blank(), 
         panel.grid = ggplot2::element_blank(),
         legend.position="bottom",  
+        legend.spacing.x = unit(0.1, 'cm'),
         text=element_text(family="Helvetica"))+  
   ylab("Brood size")  + 
   xlab("Genotype")  + 
@@ -153,7 +154,7 @@ fig2b_l <- ggplot(box_swept,aes(x=genotype,y=mean_b)) +
     hjust = 0.5,
     vjust = 0.4, size = 12*5/14
   ) +
-  guides(fill=guide_legend(nrow=2,byrow=TRUE))
+  guides(fill=guide_legend(nrow=2,byrow=TRUE)) 
 
 
 ## Figure 2B by day ######
@@ -273,7 +274,7 @@ fig3b <- ggplot(data_S3B, aes(x=factor(as.character(allele),labels = c("REF","AL
               size=1.5,
               aes(fill=chr_geno),
               alpha=0.8) +                      
-  scale_fill_manual(values=c("gold2","plum4")) + 
+  scale_fill_manual(values=c("gold2","plum4"),labels = c("swept", "divergent")) + 
   theme_bw() + 
   facet_grid(.~facet_marker) +
   theme(axis.text =  element_text(size=12,  color = "black"),
@@ -335,7 +336,7 @@ geo_box <- ggplot(box_swept_loc,aes(x=loc,y=mean_b)) +
                      ref.group = "Hawaii",
                      label = "p.signif",
                      label.y = c(320,350)) +                      
-  scale_fill_manual(values=c("gold2" ,"plum4")) + 
+  scale_fill_manual(values=c("gold2" ,"plum4"),labels = c("swept", "divergent")) + 
   theme_bw() +
   theme(axis.text =  element_text(size=12,  color = "black"),
         plot.title = element_text(hjust = 0.1, size=12,  color = "black"),
@@ -434,7 +435,7 @@ stat_box_data <- function(y, upper_limit = max(data_SS2$mean_b) * 1.15) {
 figS2b <- ggplot(data_SS2,aes(x=chr_geno,y=mean_b)) + 
   geom_jitter(shape=21,position=position_jitter(0.2),size=0.5,fill="black") +
   geom_boxplot(aes(fill=chr_geno),outlier.shape = NA,alpha=0.5) + 
-  scale_fill_manual(values=c("gold2","plum4")) + 
+  scale_fill_manual(values=c("gold2","plum4"),labels = c("swept", "divergent")) + 
   theme_bw() + facet_grid(.~swept_region) +
   theme(axis.text.y =  element_text(size=12,  color = "black"),
         axis.text.x =  element_blank(),

@@ -772,7 +772,7 @@ ggsave(figS9, filename = paste( "figures/Fig_S9.png",sep=""), units = "mm",heigh
 
 ##########################################
 #           Figure S10                    #
-#      norm.n linkage-mapping 0.5% DMSO  #
+#      norm.n linkage-mapping 1% DMSO  #
 ##########################################
 
 

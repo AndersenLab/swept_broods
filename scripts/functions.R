@@ -79,6 +79,78 @@ facet_wrap_custom <- function(..., scale_overrides = NULL) {
 
 
 ### linkage pxg plot ####
+pxgplot_par_kt <- function (cross, map, parpheno, tit = "", ylab = "norm.n",
+                            textsize = 12, titlesize = 12, pointsize = 0.5) {
+  peaks <- map %>% 
+    dplyr::group_by(iteration) %>% 
+    dplyr::filter(!is.na(var_exp)) %>% 
+    dplyr::do(head(., n = 1))
+  
+  if (nrow(peaks) == 0) {
+    stop("No QTL identified")
+  }
+  
+  uniquemarkers <- gsub("-", "\\.", unique(peaks$marker))
+  # colnames(cross$pheno) <- gsub("-", "\\.", colnames(cross$pheno))
+  
+  pheno <- cross$pheno %>% 
+    dplyr::select(map$trait[1])
+  
+  geno <- data.frame(linkagemapping:::extract_genotype(cross)) %>% 
+    dplyr::select(which(colnames(.) %in% uniquemarkers)) %>% 
+    data.frame(., pheno)
+  
+  colnames(geno)[1:(ncol(geno) - 1)] <- sapply(colnames(geno)[1:(ncol(geno) - 1)], 
+                                               function(marker) {paste(unlist(peaks[peaks$marker == gsub("\\.", "-", marker),
+                                                                                    c("chr", "pos")]), collapse = ":")})
+  colnames(geno)[ncol(geno)] <- "pheno"
+  
+  split <- tidyr::gather(geno, marker, genotype, -pheno) %>%
+    tidyr::drop_na(genotype)
+  
+  split$genotype <- sapply(split$genotype, function(x) {
+    if (x == -1) {
+      "N2-RIAILs"
+    }
+    else {
+      "CB-RIAILs"
+    }
+  })
+  
+  # add parent phenotype
+  parpheno <- parpheno %>% 
+    dplyr::mutate(marker = " Parental") %>%
+    dplyr::mutate(genotype = strain) %>%
+    dplyr::select(pheno = phenotype, marker, genotype)
+  
+  split <- split %>%
+    dplyr::bind_rows(parpheno)
+  
+  split$genotype <- factor(split$genotype, levels = c("N2", "CB4856", "N2-RIAILs", "CB-RIAILs"))
+  
+  ggplot2::ggplot(split) + 
+    ggplot2::geom_jitter(ggplot2::aes(x = genotype, y = pheno), alpha = 1, size = pointsize, width = 0.1) + 
+    ggplot2::geom_boxplot(ggplot2::aes(x = genotype, y = pheno, fill = genotype, alpha = 0.5), outlier.shape = NA) + 
+    ggplot2::scale_fill_manual(values = c(`N2-RIAILs` = "orange", `CB-RIAILs` = "blue", "N2" = "orange", "CB4856" = "blue")) + 
+    ggplot2::facet_wrap(~marker, ncol = 5, scales = "free_x") + 
+    ggplot2::theme_bw() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = textsize, color = "black"), 
+                   axis.text.y = ggplot2::element_text(size = textsize, color = "black"), 
+                   axis.title.x = ggplot2::element_text(size = titlesize, color = "black", vjust = -0.3), 
+                   axis.title.y = ggplot2::element_text(size = titlesize,  color = "black"), 
+                   strip.text.x = ggplot2::element_text(size = textsize,  color = "black"),
+                   strip.text.y = ggplot2::element_text(size = textsize,  color = "black"),
+                   plot.title = ggplot2::element_blank(), 
+                   strip.background = element_blank(),
+                   text=element_text(family="Helvetica"),
+                   legend.position = "none", 
+                   panel.grid = ggplot2::element_blank()) + 
+    ggplot2::labs(x = "", y = ylab) + 
+    scale_x_discrete(labels=c("CB-RIAILs" = "CB\nRIAILs", "N2-RIAILs" = "N2\nRIAILs"))
+  
+}
+
+
 
 lk_pxg_plot <- function(lk_pxg_data){
   
@@ -103,7 +175,7 @@ lk_pxg_plot <- function(lk_pxg_data){
                    legend.position = "none", 
                    panel.grid = ggplot2::element_blank()) + 
     ggplot2::labs(x = "", y = "norm.n") + 
-    scale_x_discrete(labels=c("CB-RIAILs" = "CB\nRIAILs", "N2-RIAILs" = "N2\nRIAILs"))
+    scale_x_discrete(labels=c("CB-RIAILs" = "CB\nAllele", "N2-RIAILs" = "N2\nAllele"))
   
   return(lk_pxg_plt)
   
@@ -112,6 +184,47 @@ lk_pxg_plot <- function(lk_pxg_data){
 
 
 ### linkage LOD plot ####
+maxlodplot_kt <- function (map, textsize = 12, titlesize = 12, linesize = 0.5) {
+  
+  map<-mappingdf
+  map1 <- map %>% dplyr::group_by(marker) %>% dplyr::filter(lod ==max(lod))
+  cis <- map %>% dplyr::group_by(marker) %>% dplyr::mutate(maxlod = max(lod)) %>%
+    dplyr::group_by(iteration) %>% dplyr::filter(!is.na(var_exp)) %>%
+    dplyr::do(head(., n = 1))
+  if (nrow(cis) == 0) {
+    plot <- ggplot2::ggplot(map1, ggplot2::aes(x = genotype,y = pheno)) + ggplot2::geom_blank()
+    return(plot)
+  }
+  map1 <- linkagemapping:::cidefiner(cis, map1)
+  plot <- ggplot2::ggplot(map1) + 
+    ggplot2::aes(x = pos/1e+06,y = lod)
+  if (nrow(cis) != 0) {
+    plot <- plot + ggplot2::geom_ribbon(ggplot2::aes(x = pos/1e+06,ymin = 0, ymax = ci_lod), fill = "cyan",alpha=.3) +
+      ggplot2::geom_point(data = cis, ggplot2::aes(x = pos/1e+06,y = (1.05 * maxlod)), fill = "red", shape = 25,
+                          size = 3.2, show.legend = FALSE) + 
+      ggplot2::geom_text(data = cis, ggplot2::aes(x = pos/1e+06, y = (1.25 * maxlod), label = paste0(100 *round(var_exp, digits = 3), "%")), 
+                         colour = "black",size = 8*5 /14, hjust = "inward")
+  }
+  plot <- plot + ggplot2::geom_line(size = linesize, alpha = 0.85) +
+    ggplot2::facet_grid(. ~ chr, scales = "free", space = "free") +
+    ggplot2::labs(x = "Genomic Position (Mb)", y = "LOD") +
+    ggplot2::scale_colour_discrete(name = "Mapping\nIteration") +
+    ggplot2::ggtitle(map1$trait[1]) + 
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = textsize, color = "black"),
+      axis.text.y = ggplot2::element_text(size = textsize, color = "black"),
+      axis.title.x = ggplot2::element_text(size = titlesize, color="black"),
+      axis.title.y = ggplot2::element_text(size = titlesize, color="black"),
+      strip.text.x = ggplot2::element_text(size = textsize,  color = "black"),
+      strip.text.y = ggplot2::element_text(size = textsize, color = "black"),
+      plot.title = ggplot2::element_blank(),
+      strip.background = element_blank(),
+      panel.grid = ggplot2::element_blank(),
+      text=element_text(family="Helvetica")) + 
+    scale_y_continuous(expand = expand_scale(mult = c(0, .05))) 
+  return(plot)
+}
 
 
 lk_lod_plot <- function(lkmap,cis){
@@ -218,7 +331,7 @@ pxg_plot <- function (data_pxg){
           strip.background = element_blank(), 
           panel.grid = ggplot2::element_blank(),
           text=element_text(family="Helvetica")) +  
-    ylab("Brood size")  +
+    ylab("Lifetime fertility")  +
     xlab("Genotype") +
     labs(fill="Swept ratio") 
   
@@ -231,7 +344,6 @@ pxg_plot <- function (data_pxg){
 ### interval haplotype ####
 
 iv_hap <- function(data_inhap){
-  
   
 
   data_inhap$Genotypes <- factor(data_inhap$genotype,levels = c("swept","divergent"))

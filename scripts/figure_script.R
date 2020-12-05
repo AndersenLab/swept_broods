@@ -1,5 +1,5 @@
 
-base_dir <- "swept_broods/"
+base_dir <- "/Users/gaotian/OneDrive\ -\ Northwestern\ University/projects/github_repo/AndersenLab/swept_broods/"
 
 setwd(base_dir)
 
@@ -23,7 +23,7 @@ library(ggrepel)
 
 ## Figure 1A #####
 
-data_S1A <- read.csv("processed_data/S1A_File.csv", stringsAsFactors=FALSE)
+data_S1A <- read.csv("processed_data/FileS1_haplotypes.csv", stringsAsFactors=FALSE)
 
 fig1a <-  ggplot(data_S1A,
                  aes(xmin = start/1E6, xmax = stop/1E6,
@@ -52,7 +52,7 @@ fig1a <-  ggplot(data_S1A,
 
 ## Figure 1B #####
 
-load("processed_data/S1B_File.RData")
+load("processed_data/FileS2_tree.RData")
 
 fig1b <- ggtree(data_S1B, layout="rectangular", branch.length="rate", size = 0.3,color="gray51") +
   geom_tippoint( aes(fill=label,  color=label),  
@@ -93,7 +93,7 @@ ggsave(fig_1AB, filename = paste("figures/Fig_1.png",sep = ""), units = "mm",hei
 
 ## Figure 2A ####
 
-data_S2A <- read.csv("processed_data/S2A_File.csv", stringsAsFactors=FALSE)
+data_S2A <- read.csv("processed_data/FileS3_lifetimeFertility.csv", stringsAsFactors=FALSE)
 
 bar_S2A <- data_S2A %>% dplyr::mutate(Strain=ifelse(strain %in% c("N2","CB4856"),strain,"Other strains"))
 
@@ -114,14 +114,14 @@ fig2a <- ggplot(bar_S2A,aes(x=fct_reorder(strain, mean_b),y=mean_b,fill=Strain))
         legend.background = element_rect(fill=alpha('white', 0)),
         legend.position=c(0.3,0.9)) +
   xlab("Strain") + 
-  ylab("Brood size")  + 
+  ylab("Lifetime fertility")  + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 370)) + guides(fill = guide_legend(nrow = 1))
 
 
 ## Figure 2B total ######
 
 box_swept <- data_S2A %>%
-  dplyr::mutate(day =  "Brood size") 
+  dplyr::mutate(day =  "Lifetime") 
 
 
 box_swept$Genotypes <- factor(box_swept$genotype,levels = c("swept","divergent"))
@@ -155,7 +155,7 @@ fig2b_l <- ggplot(box_swept,aes(x=Genotypes,y=mean_b)) +
         legend.position="bottom",  
         legend.spacing.x = unit(0.1, 'cm'),
         text=element_text(family="Helvetica"))+  
-  ylab("Number of progeny")  + 
+  ylab("Fertility")  + 
   xlab("Genotype")  + 
   scale_y_continuous(limits =c(100,400),breaks=seq(100,400,50)) +
   stat_compare_means(comparisons = list(c("swept","divergent")),label.y = c(350),label = "p.signif")+
@@ -171,7 +171,7 @@ fig2b_l <- ggplot(box_swept,aes(x=Genotypes,y=mean_b)) +
 
 ## Figure 2B by day ######
 
-data_S2B <- read.csv("processed_data/S2B_File.csv", stringsAsFactors=FALSE)
+data_S2B <- read.csv("processed_data/FileS4_dailyFertility.csv", stringsAsFactors=FALSE)
 
 data_S2B$Genotypes <- factor(data_S2B$genotype,levels = c("swept","divergent"))
 
@@ -235,7 +235,7 @@ ggsave(fig_2, filename = paste( "figures/Fig_2.png",sep=""), units = "mm",height
 
 ## Figure 3A manhanton #####
 
-data_S3A <- read.csv("processed_data/S3A_File.csv", stringsAsFactors=FALSE)
+data_S3A <- read.csv("processed_data/FileS5_GWA121.csv", stringsAsFactors=FALSE)
 
 fig3a <- manhaplot(data_S3A)+ 
     scale_y_continuous(expand = c(0, 0), limits = c(0, 10.4)) 
@@ -244,7 +244,7 @@ fig3a <- manhaplot(data_S3A)+
 
 ## Figure 3B pxg#####
 
-data_S3B <- read.csv("processed_data/S3B_File.csv", stringsAsFactors=FALSE)
+data_S3B <- read.csv("processed_data/FileS6_pxg121.csv", stringsAsFactors=FALSE)
 
 fig3b <- pxg_plot(data_S3B)
 
@@ -271,7 +271,7 @@ ggsave(fig_3, filename = paste( "figures/Fig_3.png",sep=""), units = "mm",height
 ##########################################
 
 
-data_S4 <- read.csv("processed_data/S4_File.csv", stringsAsFactors=FALSE)
+data_S4 <- read.csv("processed_data/FileS7_geo.csv", stringsAsFactors=FALSE)
 
 data_S4$Genotypes <- factor(data_S4$genotype,levels = c("swept","divergent"))
 
@@ -308,7 +308,7 @@ geo_box <- ggplot(box_swept_loc,aes(x=loc,y=mean_b)) +
         legend.spacing.x = unit(5, 'mm'),
         panel.grid = ggplot2::element_blank(),
         text=element_text(family="Helvetica"))+  
-  ylab("Brood size")  + xlab("Sampling location")+
+  ylab("Lifetime fertility")  + xlab("Sampling location")+
   labs(color="Sampling location",fill="Swept ratio") +
   ylim(100,370)
 
@@ -323,7 +323,7 @@ ggsave(geo_box, filename = paste( "figures/Fig_4.png",sep=""), units = "mm",heig
 #      Geographical distribution         #
 ##########################################
 
-data_SS1 <- read.csv("processed_data/SS1_File.csv", stringsAsFactors=FALSE)
+data_SS1 <- read.csv("processed_data/FileS8_distribution.csv", stringsAsFactors=FALSE)
 
 
 # modify settings
@@ -379,7 +379,7 @@ ggsave(plt_wolrd, filename = paste("figures/Fig_S1.png",sep = ""), units = "mm",
 ##########################################
 
 
-data_SS2 <- read.csv("processed_data/SS2_File.csv", stringsAsFactors=FALSE)
+data_SS2 <- read.csv("processed_data/FileS9_swpchr.csv", stringsAsFactors=FALSE)
 
 data_SS2$Genotypes <- factor(data_SS2$chr_geno,levels = c("swept","divergent"))
 
@@ -410,7 +410,7 @@ figS2b <- ggplot(data_SS2,aes(x=Genotypes,y=mean_b)) +
         panel.grid = ggplot2::element_blank(),
         legend.position="right",  
         text=element_text(family="Helvetica"))+  
-  ylab("Brood size")  + 
+  ylab("Lifetime fertility")  + 
   xlab("Genotype")  + 
   scale_y_continuous(limits =c(100,400),breaks=seq(100,400,50)) +
   stat_compare_means(comparisons = list(c("swept","divergent")),label.y = c(350),label = "p.signif")+
@@ -437,7 +437,7 @@ ggsave(figS2b, filename = paste("figures/Fig_S2.png",sep = ""), units = "mm",hei
 
 ## Figure S3B GWAS EIGEN QTL LD #####
 
-data_SS3 <- read.csv("processed_data/SS3_File.csv", stringsAsFactors=FALSE)
+data_SS3 <- read.csv("processed_data/FileS10_LD121.csv", stringsAsFactors=FALSE)
 
 
 figS3 <- ggplot2::ggplot(data_SS3) +
@@ -471,7 +471,7 @@ ggsave(figS3, filename = paste( "figures/Fig_S3.png",sep=""), units = "mm",heigh
 
 ## Figure S4 QTL interval haplotype #####
 
-SS4_File <- read.csv("~/OneDrive - Northwestern University/projects/manuscripts/swept_broods121/processed_data/SS4_File.csv", stringsAsFactors=FALSE)
+SS4_File <- read.csv("processed_data/FileS11_QTLhaplotype121.csv", stringsAsFactors=FALSE)
 
 
 ####ref_swept ##
@@ -525,132 +525,276 @@ ggsave(figS4, filename = paste( "figures/Fig_S4.png",sep=""), units = "mm",heigh
 
 
 
+
 ##########################################
 #           Figure S5                    #
-#      swept strans GWA                  #
+#      norm.n linkage-mapping 1% H2O     #
 ##########################################
 
 
-## Figure S5 A manhanton #####
+load("processed_data/FileS12_lk1h2o.RData")
 
-data_SS5A <- read.csv("processed_data/SS5A_File.csv", stringsAsFactors=FALSE)
-
-figS5_A <- manhaplot(data_SS5A) + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 6.25)) 
-
-
-## Figure S5 B pxg #####
-
-
-data_SS5B <- read.csv("processed_data/SS5B_File.csv", stringsAsFactors=FALSE)
-
-
-figS5_B <- pxg_plot(data_SS5B) +
-  theme(legend.position = "none")
-
-
-## Figure S5 C interval haplotype #####
-
-data_SS5C <- read.csv("processed_data/SS5C_File.csv", stringsAsFactors=FALSE)
-
-figS5C_ref <- iv_hap(subset(data_SS5C,ALL=="REF")) +
-  ylab("REF") +
-  theme( plot.margin = unit(c(0, 2, 0, 10), "mm"))+
-  facet_wrap_custom(.~facet_marker, scales="free",nrow = 1, 
-                    scale_overrides = list(
-                      scale_override(1, scale_x_continuous(breaks = c(2184029/1E6, 2622125/1E6, 3280545/1E6),labels = scales::number_format(accuracy = 0.1))),
-                      scale_override(2, scale_x_continuous(breaks = c(2876548/1E6, 3107587/1E6, 3717385/1E6),labels = scales::number_format(accuracy = 0.1))),
-                      scale_override(3, scale_x_continuous(breaks = c(15288009/1E6, 15883817/1E6, 16167354/1E6),labels = scales::number_format(accuracy = 0.1)))
-                    ))
-
-figS5C_alt <- iv_hap(subset(data_SS5C,ALL=="ALT")) +
-  ylab("ALT")  +
-  theme( strip.text = element_blank(),
-         axis.text =  element_text(size=12,  color = "black"),
-         plot.margin = unit(c(0, 2, 0, 10), "mm"),
-         axis.title.x =  element_text(size=12, vjust = 1,  color = "black"))+
-  facet_wrap_custom(.~facet_marker, scales="free",nrow = 1, 
-                    scale_overrides = list(
-                      scale_override(1, scale_x_continuous(breaks = c(2184029/1E6, 2622125/1E6, 3280545/1E6),labels = scales::number_format(accuracy = 0.1))),
-                      scale_override(2, scale_x_continuous(breaks = c(2876548/1E6, 3107587/1E6, 3717385/1E6),labels = scales::number_format(accuracy = 0.1))),
-                      scale_override(3, scale_x_continuous(breaks = c(15288009/1E6, 15883817/1E6, 16167354/1E6),labels = scales::number_format(accuracy = 0.1)))
-                    ))
-
-
-#### cow s5 ##
-
-figS5_C <- cowplot::plot_grid(figS5C_ref ,figS5C_alt,
-                             nrow = 2,ncol = 1,
-                             axis = "lr",
-                             rel_heights = c(4.3,1))
+figS5_A <- lk_lod_plot(lkmap_SS8,cis_SS8)
 
 
 
-
-figS5 <- cowplot::plot_grid(figS5_A ,figS5_B,figS5_C,
-                                    nrow = 3,ncol = 1,
-                                    labels = c("A","B","C"), 
-                                    label_size = 12, 
-                                    label_fontfamily="Helvetica",
-                                    axis = "lr",
-                                    rel_heights = c(1,0.8,1.6))
+data_SS5B <- read.csv("processed_data/FileS13_pxg1h2o.csv", stringsAsFactors=FALSE)
 
 
+data_SS5B$peakmarker <- factor(data_SS5B$marker, levels = c(" Parental", "II:3646789"))
 
 
-ggsave(figS5, filename = paste( "figures/Fig_S5.png",sep=""), units = "mm",height = 180, width = 170)
+figS5_B <- lk_pxg_plot(data_SS5B) + 
+  ggplot2::facet_wrap(~peakmarker, ncol = 2, scales = "free_x") + 
+  ggplot2::labs(x = "", y = paste("Fertility","(1% H2O)",sep = " "))
 
+
+
+figS5 <- cowplot::plot_grid(figS5_A,figS5_B,
+                             labels = c("A","B"), 
+                            nrow = 2,
+                            ncol = 1,
+                            label_size = 12, 
+                            label_fontfamily="Helvetica",
+                            axis = "lr")
+
+
+ggsave(figS5, filename = paste( "figures/Fig_S5.png",sep=""), units = "mm",height = 120, width = 170)
 
 
 
 ##########################################
 #           Figure S6                    #
-#      divergent strans GWA              #
+#      norm.n linkage-mapping 0.5% DMSO  #
 ##########################################
 
 
-## Figure S6 manhanton #####
+load("processed_data/FileS14_lk05dmso.RData")
 
-data_SS6 <- read.csv("processed_data/SS6_File.csv", stringsAsFactors=FALSE)
+figS6_A <- lk_lod_plot(lkmap_SS9,cis_SS9)
 
-figS6 <- manhaplot(data_SS6) + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 5.8)) 
 
-ggsave(figS6, filename = paste( "figures/Fig_S6.png",sep=""), units = "mm",height = 60, width = 170)
 
+data_SS6B <- read.csv("processed_data/FileS15_pxg05dmso.csv", stringsAsFactors=FALSE)
+
+
+data_SS6B$peakmarker <- factor(data_SS6B$marker, levels = c(" Parental", "II:8964146" , "IV:8044494" , "IV:16522256" ,"V:11883496"  ))
+
+
+
+figS6_B <- lk_pxg_plot(data_SS6B) + 
+  ggplot2::facet_wrap(~peakmarker, ncol = 5, scales = "free_x") + 
+  ggplot2::labs(x = "", y = paste("Fertility","(0.5% DMSO)",sep = " "))
+
+
+
+figS6 <- cowplot::plot_grid(figS6_A,figS6_B,
+                            labels = c("A","B"), 
+                            nrow = 2,
+                            ncol = 1,
+                            label_size = 12, 
+                            label_fontfamily="Helvetica",
+                            axis = "lr")
+
+
+ggsave(figS6, filename = paste( "figures/Fig_S6.png",sep=""), units = "mm",height = 120, width = 170)
 
 
 
 
 ##########################################
 #           Figure S7                    #
+#      norm.n linkage-mapping 1% DMSO    #
+##########################################
+
+
+load("processed_data/FileS16_lk1dmso.RData")
+
+figS7_A <- lk_lod_plot(lkmap_SS10,cis_SS10)
+
+
+
+data_SS7B <- read.csv("processed_data/FileS17_pxg1dmso.csv", stringsAsFactors=FALSE)
+
+
+data_SS7B$peakmarker <- factor(data_SS7B$marker, levels = c(" Parental",  "IV:9031007" ,"V:11883496"  ))
+
+
+
+figS7_B <- lk_pxg_plot(data_SS7B) + 
+  ggplot2::facet_wrap(~peakmarker, ncol = 3, scales = "free_x") + 
+  ggplot2::labs(x = "", y = paste("Fertility","(1% DMSO)",sep = " "))
+
+
+
+figS7 <- cowplot::plot_grid(figS7_A,figS7_B,
+                            labels = c("A","B"), 
+                            nrow = 2,
+                            ncol = 1,
+                            label_size = 12, 
+                            label_fontfamily="Helvetica",
+                            axis = "lr")
+
+
+ggsave(figS7, filename = paste( "figures/Fig_S7.png",sep=""), units = "mm",height = 120, width = 170)
+
+
+
+
+
+##########################################
+#           Figure S8                    #
+#      swept strans GWA                  #
+##########################################
+
+
+## Figure S8 A manhanton #####
+
+data_SS8A <- read.csv("processed_data/FileS18_GWA69.csv", stringsAsFactors=FALSE)
+
+figS8_A <- manhaplot(data_SS8A) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 6.25)) 
+
+
+## Figure S8 B pxg #####
+
+
+data_SS8B <- read.csv("processed_data/FileS19_pxg69.csv", stringsAsFactors=FALSE)
+
+
+figS8_B <- pxg_plot(data_SS8B) +
+  theme(legend.position = "none")
+
+
+## Figure S8 C interval haplotype #####
+
+data_SS8C <- read.csv("processed_data/FileS20_QTLhaplotype69.csv", stringsAsFactors=FALSE)
+
+figS8C_ref <- iv_hap(subset(data_SS8C,ALL=="REF")) +
+  ylab("REF") +
+  theme( plot.margin = unit(c(0, 2, 0, 10), "mm"))+
+  facet_wrap_custom(.~facet_marker, scales="free",nrow = 1, 
+                    scale_overrides = list(
+                      scale_override(1, scale_x_continuous(breaks = c(2184029/1E6, 2622125/1E6, 3280545/1E6),labels = scales::number_format(accuracy = 0.1))),
+                      scale_override(2, scale_x_continuous(breaks = c(2876548/1E6, 3107587/1E6, 3717385/1E6),labels = scales::number_format(accuracy = 0.1))),
+                      scale_override(3, scale_x_continuous(breaks = c(15288009/1E6, 15883817/1E6, 16167354/1E6),labels = scales::number_format(accuracy = 0.1)))
+                    ))
+
+figS8C_alt <- iv_hap(subset(data_SS8C,ALL=="ALT")) +
+  ylab("ALT")  +
+  theme( strip.text = element_blank(),
+         axis.text =  element_text(size=12,  color = "black"),
+         plot.margin = unit(c(0, 2, 0, 10), "mm"),
+         axis.title.x =  element_text(size=12, vjust = 1,  color = "black"))+
+  facet_wrap_custom(.~facet_marker, scales="free",nrow = 1, 
+                    scale_overrides = list(
+                      scale_override(1, scale_x_continuous(breaks = c(2184029/1E6, 2622125/1E6, 3280545/1E6),labels = scales::number_format(accuracy = 0.1))),
+                      scale_override(2, scale_x_continuous(breaks = c(2876548/1E6, 3107587/1E6, 3717385/1E6),labels = scales::number_format(accuracy = 0.1))),
+                      scale_override(3, scale_x_continuous(breaks = c(15288009/1E6, 15883817/1E6, 16167354/1E6),labels = scales::number_format(accuracy = 0.1)))
+                    ))
+
+
+#### cow s8 ##
+
+figS8_C <- cowplot::plot_grid(figS8C_ref ,figS8C_alt,
+                              nrow = 2,ncol = 1,
+                              axis = "lr",
+                              rel_heights = c(4.3,1))
+
+
+
+
+figS8 <- cowplot::plot_grid(figS8_A ,figS8_B,figS8_C,
+                            nrow = 3,ncol = 1,
+                            labels = c("A","B","C"), 
+                            label_size = 12, 
+                            label_fontfamily="Helvetica",
+                            axis = "lr",
+                            rel_heights = c(1,0.8,1.6))
+
+
+
+
+ggsave(figS8, filename = paste( "figures/Fig_S8.png",sep=""), units = "mm",height = 180, width = 170)
+
+
+
+
+##########################################
+#           Figure S9                    #
+#      divergent strans GWA              #
+##########################################
+
+
+## Figure S9A manhanton #####
+
+data_SS9A <- read.csv("processed_data/FileS21_GWA52.csv", stringsAsFactors=FALSE)
+
+figS9_A <- manhaplot(data_SS9A) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 5.8)) 
+
+
+
+## Figure S9B pxg #####
+
+
+data_SS9B <- read.csv("processed_data/FileS22_pxg52.csv", stringsAsFactors=FALSE)
+
+data_SS9B$peakmarker <- factor(data_SS9B$facet_marker, levels = c("I:2737803"  ,  "I:11088660"  , "II:2894484"  , "II:12109236" , "II:13022285",  "III:12809228" ,"IV:3085139" ,  "IV:13544674" , "X:12293183" ,  "X:15685153" ,  "X:17497885"))
+
+
+figS9_B <- pxg_plot(data_SS9B) +
+  theme(legend.position = "none") + 
+  facet_wrap(.~peakmarker, nrow=3)
+
+
+
+figS9 <- cowplot::plot_grid(figS9_A ,figS9_B,
+                            nrow = 2,ncol = 1,
+                            labels = c("A","B"), 
+                            label_size = 12, 
+                            label_fontfamily="Helvetica",
+                            axis = "lr",
+                            rel_heights = c(1.2,3))
+
+
+
+
+
+ggsave(figS9, filename = paste( "figures/Fig_S9.png",sep=""), units = "mm",height = 180, width = 170)
+
+
+
+##########################################
+#           Figure S10                    #
 #          norm.n GWA                   #
 ##########################################
 
 
-## Figure S7 A manhanton #####
+## Figure S10 A manhanton #####
 
-data_SS7A <- read.csv("processed_data/SS7A_File.csv", stringsAsFactors=FALSE)
+data_SS10A <- read.csv("processed_data/FileS23_GWA236.csv", stringsAsFactors=FALSE)
 
-figS7_A <- manhaplot(data_SS7A) + 
+figS10_A <- manhaplot(data_SS10A) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 6)) 
 
 
-## Figure S7 B pxg #####
+## Figure S10 B pxg #####
 
 
-data_SS7B <- read.csv("processed_data/SS7B_File.csv", stringsAsFactors=FALSE)
+data_SS10B <- read.csv("processed_data/FileS24_pxg236.csv", stringsAsFactors=FALSE)
 
 
-figS7_B <- pxg_plot(data_SS7B) +
-  theme(legend.position = "none") 
+figS10_B <- pxg_plot(data_SS10B) +
+  theme(legend.position = "none")  +  
+  ylab("Fertility") 
 
 
-## Figure S7 C interval haplotype #####
+## Figure S10 C interval haplotype #####
 
-data_SS7C <- read.csv("processed_data/SS7C_File.csv", stringsAsFactors=FALSE)
+data_SS10C <- read.csv("processed_data/FileS25_QTLhaplotype236.csv", stringsAsFactors=FALSE)
 
-figS7C_ref <- iv_hap(subset(data_SS7C,ALL=="REF")) +
+figS10C_ref <- iv_hap(subset(data_SS10C,ALL=="REF")) +
   ylab("REF") +
   theme( plot.margin = unit(c(0, 2, 0, 10), "mm"))+
   facet_wrap_custom(.~facet_marker, scales="free",nrow = 1, 
@@ -659,7 +803,7 @@ figS7C_ref <- iv_hap(subset(data_SS7C,ALL=="REF")) +
                       scale_override(2, scale_x_continuous(breaks = c(3673426/1E6, 4831537/1E6, 6132617/1E6),labels = scales::number_format(accuracy = 0.1)))
                     ))
 
-figS7C_alt <- iv_hap(subset(data_SS7C,ALL=="ALT")) +
+figS10C_alt <- iv_hap(subset(data_SS10C,ALL=="ALT")) +
   ylab("ALT")  +
   theme( strip.text = element_blank(),
          axis.text =  element_text(size=12,  color = "black"),
@@ -672,9 +816,9 @@ figS7C_alt <- iv_hap(subset(data_SS7C,ALL=="ALT")) +
                     ))
 
 
-#### cow s7 ##
+#### cow s10 ##
 
-figS7_C <- cowplot::plot_grid(figS7C_ref ,figS7C_alt,
+figS10_C <- cowplot::plot_grid(figS10C_ref ,figS10C_alt,
                               nrow = 2,ncol = 1,
                               axis = "lr",
                               rel_heights = c(4,1))
@@ -682,7 +826,7 @@ figS7_C <- cowplot::plot_grid(figS7C_ref ,figS7C_alt,
 
 
 
-figS7 <- cowplot::plot_grid(figS7_A ,figS7_B,figS7_C,
+figS10 <- cowplot::plot_grid(figS10_A ,figS10_B,figS10_C,
                             nrow = 3,ncol = 1,
                             labels = c("A","B","C"), 
                             label_size = 12, 
@@ -693,115 +837,4 @@ figS7 <- cowplot::plot_grid(figS7_A ,figS7_B,figS7_C,
 
 
 
-ggsave(figS7, filename = paste( "figures/Fig_S7.png",sep=""), units = "mm",height = 180, width = 170)
-
-
-##########################################
-#           Figure S8                    #
-#      norm.n linkage-mapping 1% H2O     #
-##########################################
-
-
-load("processed_data/SS8A_File.RData")
-
-figS8_A <- lk_lod_plot(lkmap_SS8,cis_SS8)
-
-
-
-data_SS8B <- read.csv("processed_data/SS8B_File.csv", stringsAsFactors=FALSE)
-
-
-data_SS8B$peakmarker <- factor(data_SS8B$marker, levels = c(" Parental", "II:3646789"))
-
-
-figS8_B <- lk_pxg_plot(data_SS8B) + 
-  ggplot2::facet_wrap(~peakmarker, ncol = 2, scales = "free_x") 
-
-
-figS8 <- cowplot::plot_grid(figS8_A,figS8_B,
-                             labels = c("A","B"), 
-                            nrow = 2,
-                            ncol = 1,
-                            label_size = 12, 
-                            label_fontfamily="Helvetica",
-                            axis = "lr")
-
-
-ggsave(figS8, filename = paste( "figures/Fig_S8.png",sep=""), units = "mm",height = 120, width = 170)
-
-
-
-##########################################
-#           Figure S9                    #
-#      norm.n linkage-mapping 0.5% DMSO  #
-##########################################
-
-
-load("processed_data/SS9A_File.RData")
-
-figS9_A <- lk_lod_plot(lkmap_SS9,cis_SS9)
-
-
-
-data_SS9B <- read.csv("processed_data/SS9B_File.csv", stringsAsFactors=FALSE)
-
-
-data_SS9B$peakmarker <- factor(data_SS9B$marker, levels = c(" Parental", "II:8964146" , "IV:8044494" , "IV:16522256" ,"V:11883496"  ))
-
-
-
-figS9_B <- lk_pxg_plot(data_SS9B) + 
-  ggplot2::facet_wrap(~peakmarker, ncol = 5, scales = "free_x") + 
-  ggplot2::labs(x = "", y = paste("norm.n","(0.5% DMSO)",sep = " "))
-
-
-
-figS9 <- cowplot::plot_grid(figS9_A,figS9_B,
-                            labels = c("A","B"), 
-                            nrow = 2,
-                            ncol = 1,
-                            label_size = 12, 
-                            label_fontfamily="Helvetica",
-                            axis = "lr")
-
-
-ggsave(figS9, filename = paste( "figures/Fig_S9.png",sep=""), units = "mm",height = 120, width = 170)
-
-
-
-
-##########################################
-#           Figure S10                    #
-#      norm.n linkage-mapping 1% DMSO  #
-##########################################
-
-
-load("processed_data/SS10A_File.RData")
-
-figS10_A <- lk_lod_plot(lkmap_SS10,cis_SS10)
-
-
-
-data_SS10B <- read.csv("processed_data/SS10B_File.csv", stringsAsFactors=FALSE)
-
-
-data_SS10B$peakmarker <- factor(data_SS10B$marker, levels = c(" Parental",  "IV:9031007" ,"V:11883496"  ))
-
-
-
-figS10_B <- lk_pxg_plot(data_SS10B) + 
-  ggplot2::facet_wrap(~peakmarker, ncol = 3, scales = "free_x") + 
-  ggplot2::labs(x = "", y = paste("norm.n","(1% DMSO)",sep = " "))
-
-
-
-figS10 <- cowplot::plot_grid(figS10_A,figS10_B,
-                            labels = c("A","B"), 
-                            nrow = 2,
-                            ncol = 1,
-                            label_size = 12, 
-                            label_fontfamily="Helvetica",
-                            axis = "lr")
-
-
-ggsave(figS10, filename = paste( "figures/Fig_S10.png",sep=""), units = "mm",height = 120, width = 170)
+ggsave(figS10, filename = paste( "figures/Fig_S10.png",sep=""), units = "mm",height = 180, width = 170)

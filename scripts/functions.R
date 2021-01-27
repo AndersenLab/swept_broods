@@ -262,19 +262,20 @@ lk_lod_plot <- function(lkmap,cis){
 ### manhtton ####
 manhaplot <- function (data_manh){  
   
-  plt_manh <-  data_manh  %>% 
-    ggplot2::ggplot(.) +
+#  data_manh <- data_SS11A
+  
+  plt_manh <-  ggplot2::ggplot(data_manh) +
   ggplot2::aes(x = POS/1e6, y = log10p) +
   ggplot2::scale_color_manual(values = c("0" = "black", 
                                          "1" = "red",
                                          "2" = "hotpink3")) +
-  ggplot2::geom_rect(ggplot2::aes(xmin = startPOS/1e6,    # this is the plot boundary for LD and gene plots
-                                  xmax = endPOS/1e6,    # this is the plot boundary for LD and gene plots
-                                  ymin = 0, 
-                                  ymax = Inf, 
-                                  fill = "plum4"), 
-                     color = "plum4",fill = "cyan",linetype = 2, 
-                     alpha=.3) +
+ # ggplot2::geom_rect(ggplot2::aes(xmin = startPOS/1e6,    # this is the plot boundary for LD and gene plots
+ #                                 xmax = endPOS/1e6,    # this is the plot boundary for LD and gene plots
+ #                                 ymin = 0, 
+  #                                ymax = Inf, 
+  #                                fill = "plum4"), 
+ #                    color = "plum4",fill = "cyan",linetype = 2, 
+   #                  alpha=.3) +
   ggplot2::geom_hline(ggplot2::aes(yintercept = BF),
                       color = "gray", 
                       alpha = .75,  

@@ -741,13 +741,6 @@ ggsave(figS8, filename = paste( "figures/Fig_S8.png",sep=""), units = "mm",heigh
 
 
 
-fertility_peak_sum_lk <- bind_rows(cis_1h2o,cis_05dmso,cis_1dmso) %>% 
-  dplyr::ungroup() %>% 
-  dplyr::mutate(trait=ifelse(trait=="X1percwater.norm.n","1% water",
-                             ifelse(trait=="halfpercDMSO.norm.n","0.5% DMSO","1% DMSO"))) %>% 
-  dplyr::select(trait,CHROM=chr,POS=pos,startPOS=ci_l_pos,endPOS=ci_r_pos,lod)
-
- 
 newrows_size <- data.frame(trait=NA,
                            CHROM=c("I","II","III","IV","V","X"),
                            POS=1,
@@ -756,38 +749,11 @@ newrows_size <- data.frame(trait=NA,
                            lod=NA)
 
 
-lkm_sum <- ggplot(fertility_peak_sum_lk)+
-  aes(x=POS/1E6, y=trait) +
-  geom_segment(aes(x = startPOS/1e6, y = trait, xend = endPOS/1e6, yend = trait, color = lod), size = 2, alpha = 1) +
-  geom_segment(data=newrows_size,aes(x = 0, y = trait, xend = endPOS/1e6, yend = trait), size = 2.5, alpha = 0) +
-  geom_point(aes(fill=lod),colour = "black",size = 2, alpha = 1, shape = 25) +
-  facet_grid(. ~ CHROM, scales = "free", space = "free") +
-  scale_fill_gradient(high = "#D7263D", low = "#0072B2",
-                      name = "LOD") +
-  scale_color_gradient(high = "#D7263D", low = "#0072B2",
-                       name = "LOD") +
-  xlab("Genomic Position (Mb)") + 
-  ylab("") +
-  theme_bw(15)  +
-  theme(axis.text.y =  element_text(size=12,  color = "black"),
-        axis.text.x =  element_blank(), 
-        plot.title = element_text(hjust = 0.1, size=12,  color = "black"),
-        legend.text = element_text(size=12,  color = "black"),
-        axis.title =  element_text(size=12,  color = "black"),
-        strip.text = element_text(size=12, vjust = 1,  color = "black"),
-        strip.background = element_blank(), 
-        legend.title = element_text(size=12,  color = "black"),
-        legend.spacing.x = unit(5, 'mm'),
-        panel.grid = ggplot2::element_blank(),
-        plot.margin = unit(c(0, 0, 0, 0), "mm"),
-        text=element_text(family="Helvetica")) 
-
-
-
 fertility_peak_sum_gwa <- bind_rows(data_S3A,data_SS5A) %>% 
   dplyr::distinct(CHROM,POS,startPOS,endPOS,log10p) %>% 
   na.omit() %>% 
-  dplyr::mutate(trait=ifelse(CHROM=="X","1% DMSO","Agar plate"))
+  dplyr::mutate(trait=ifelse(CHROM=="X","1% DMSO","Agar plate"))  %>% 
+  dplyr::mutate(type="GWA mapping")
 
 
 gwa_sum <- ggplot(fertility_peak_sum_gwa)+
@@ -795,25 +761,66 @@ gwa_sum <- ggplot(fertility_peak_sum_gwa)+
   geom_segment(aes(x = startPOS/1e6, y = trait, xend = endPOS/1e6, yend = trait, color = log10p), size = 2, alpha = 1) +
   geom_segment(data=newrows_size,aes(x = 0, y = trait, xend = endPOS/1e6, yend = trait), size = 2.5, alpha = 0) +
   geom_point(aes(fill=log10p),colour = "black",size = 2, alpha = 1, shape = 25) +
-  facet_grid(. ~ CHROM, scales = "free", space = "free") +
+  facet_grid(type ~ CHROM, scales = "free", space = "free") +
   scale_fill_gradient(high = "#D7263D", low = "#0072B2",
                       name = expression(-log[10](italic(p))))+
   scale_color_gradient(high = "#D7263D", low = "#0072B2",
                        name = expression(-log[10](italic(p)))) +
-  xlab("Genomic Position (Mb)") + 
-  ylab("") +
   theme_bw(15) +
   theme(axis.text.y =  element_text(size=12,  color = "black"),
         axis.text.x =  element_blank(), 
+        axis.ticks.x =  element_blank(), 
         plot.title = element_text(hjust = 0.1, size=12,  color = "black"),
         legend.text = element_text(size=12,  color = "black"),
-        axis.title =  element_text(size=12,  color = "black"),
+        axis.title =  element_blank(), 
         strip.text = element_text(size=12, vjust = 1,  color = "black"),
         strip.background = element_blank(), 
         legend.title = element_text(size=12,  color = "black"),
         legend.spacing.x = unit(5, 'mm'),
         plot.margin = unit(c(0, 0, 0, 0), "mm"),
         panel.grid = ggplot2::element_blank(),
+         panel.spacing.x=unit(0.05, "lines"),
+         legend.margin=margin(0,0,0,-10),
+         text=element_text(family="Helvetica")) 
+
+
+fertility_peak_sum_lk <- bind_rows(cis_1h2o,cis_05dmso,cis_1dmso) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::mutate(trait=ifelse(trait=="X1percwater.norm.n","1% water",
+                             ifelse(trait=="halfpercDMSO.norm.n","0.5% DMSO","1% DMSO"))) %>% 
+  dplyr::select(trait,CHROM=chr,POS=pos,startPOS=ci_l_pos,endPOS=ci_r_pos,lod)  %>% 
+  dplyr::mutate(type="Linkage mapping")
+
+
+
+
+lkm_sum <- ggplot(fertility_peak_sum_lk)+
+  aes(x=POS/1E6, y=trait) +
+  geom_segment(aes(x = startPOS/1e6, y = trait, xend = endPOS/1e6, yend = trait, color = lod), size = 2, alpha = 1) +
+  geom_segment(data=newrows_size,aes(x = 0, y = trait, xend = endPOS/1e6, yend = trait), size = 2.5, alpha = 0) +
+  geom_point(aes(fill=lod),colour = "black",size = 2, alpha = 1, shape = 25) +
+  facet_grid(type ~ CHROM, scales = "free", space = "free") +
+  scale_fill_gradient(high = "#D7263D", low = "#0072B2",
+                      name = "LOD") +
+  scale_color_gradient(high = "#D7263D", low = "#0072B2",
+                       name = "LOD") +
+  xlab("Genomic position (Mb)") + 
+  ylab("") +
+  theme_bw(15)  +
+  theme(axis.text.y =  element_text(size=12,  color = "black"),
+        axis.text.x =  element_blank(),
+        plot.title = element_text(hjust = 0.1, size=12,  color = "black"),
+        legend.text = element_text(size=12,  color = "black"),
+        axis.title =  element_text(size=12,  color = "black"),
+        strip.text.x = element_blank(),
+        strip.text = element_text(size=12, vjust = 1,  color = "black"),
+        strip.background = element_blank(), 
+        legend.title = element_text(size=12,  color = "black"),
+        legend.spacing.x = unit(5, 'mm'),
+        panel.spacing.x=unit(0.05, "lines"),
+        panel.grid = ggplot2::element_blank(),
+        legend.margin=margin(0,10,0,-10),
+        plot.margin = unit(c(0, 0, 0, 0), "mm"),
         text=element_text(family="Helvetica")) 
 
 
@@ -821,9 +828,10 @@ gwa_sum <- ggplot(fertility_peak_sum_gwa)+
 
 fig5 <- cowplot::plot_grid(gwa_sum,
                            lkm_sum,
-                           labels = c('A', 'B'), 
+                         #  labels = c('A', 'B'), 
                            label_size = 10, 
                            label_fontfamily="Helvetica",
+                           rel_heights = c(0.93,1),
                            axis = "lr",
                            align = "v",
                            nrow = 2)

@@ -99,8 +99,8 @@ bar_S2A <- data_S2A %>% dplyr::mutate(Strain=ifelse(strain %in% c("N2","CB4856")
 
 
 fig2a <- ggplot(bar_S2A,aes(x=fct_reorder(strain, mean_b),y=mean_b,fill=Strain)) + 
-  geom_bar(stat='identity',color="black") + 
-  scale_fill_manual(values=c("N2"="orange","CB4856"="blue","Other strains"="gray80")) + 
+  geom_bar(stat='identity',color="gray51",size=.3) + 
+  scale_fill_manual(values=c("N2"="orange","CB4856"="blue","Other strains"="gray88")) + 
   geom_errorbar(aes(ymin=mean_b-se_b, ymax=mean_b+se_b),
                 cex = 0.2,width=.2,                   
                 position=position_dodge(.6)) + theme_bw() +

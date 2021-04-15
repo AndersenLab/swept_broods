@@ -155,12 +155,12 @@ pxgplot_par_kt <- function (cross, map, parpheno, tit = "", ylab = "norm.n",
 lk_pxg_plot <- function(lk_pxg_data){
   
 
-  lk_pxg_data$genotype <- factor(lk_pxg_data$genotype, levels = c("N2", "CB4856", "N2-RIAILs", "CB-RIAILs"))
+  lk_pxg_data$genotype <- factor(lk_pxg_data$genotype, levels = c("QX1430", "CB4856", "QX-RIAILs", "CB-RIAILs"))
   
   lk_pxg_plt <- ggplot2::ggplot(lk_pxg_data) + 
     ggplot2::geom_jitter(ggplot2::aes(x = genotype, y = pheno), alpha = 1, size = 0.5, width = 0.1) + 
     ggplot2::geom_boxplot(ggplot2::aes(x = genotype, y = pheno, fill = genotype, alpha = 0.5), outlier.shape = NA) + 
-    ggplot2::scale_fill_manual(values = c(`N2-RIAILs` = "orange", `CB-RIAILs` = "blue", "N2" = "orange", "CB4856" = "blue")) + 
+    ggplot2::scale_fill_manual(values = c(`QX-RIAILs` = "orange", `CB-RIAILs` = "blue", "QX1430" = "orange", "CB4856" = "blue")) + 
     ggplot2::facet_wrap(~marker,  scales = "free_x") + 
     ggplot2::theme_bw() + 
     ggplot2::theme(axis.text.x = ggplot2::element_text(size = 12, color = "black"), 
@@ -175,7 +175,7 @@ lk_pxg_plot <- function(lk_pxg_data){
                    legend.position = "none", 
                    panel.grid = ggplot2::element_blank()) + 
     ggplot2::labs(x = "", y = "norm.n") + 
-    scale_x_discrete(labels=c("CB-RIAILs" = "CB\nAllele", "N2-RIAILs" = "N2\nAllele"))
+    scale_x_discrete(labels=c("CB-RIAILs" = "CB\nAllele", "QX-RIAILs" = "QX\nAllele"))
   
   return(lk_pxg_plt)
   
@@ -332,7 +332,7 @@ pxg_plot <- function (data_pxg){
           strip.background = element_blank(), 
           panel.grid = ggplot2::element_blank(),
           text=element_text(family="Helvetica")) +  
-    ylab("Lifetime fertility")  +
+    ylab("Lifetime fecundity")  +
     xlab("Genotype") +
     labs(fill="Swept ratio") 
   

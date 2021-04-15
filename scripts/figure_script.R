@@ -1,15 +1,14 @@
+setwd(glue::glue("{dirname(rstudioapi::getActiveDocumentContext()$path)}/"))
+setwd("../")
 
-base_dir <- "~/swept_broods/"
-
-setwd(base_dir)
 
 
 ### load R packages####
 
 library(tidyverse)
+library(ggpubr)
 library(ggtree)
 library(cowplot)
-library(ggpubr)
 library(ggalt)    
 library(ggthemes) 
 library(ggrepel)
@@ -79,7 +78,7 @@ fig_1AB <- cowplot::plot_grid(fig1a, fig1b,
                               axis = "lr",
                               nrow = 1)
 
-ggsave(fig_1AB, filename = paste("figures/Fig_1.png",sep = ""), units = "mm",height = 225, width = 170)
+ggsave(fig_1AB, filename = paste("figures/Fig_1.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 225, width = 170)
 
 
 
@@ -93,14 +92,19 @@ ggsave(fig_1AB, filename = paste("figures/Fig_1.png",sep = ""), units = "mm",hei
 
 ## Figure 2A ####
 
-data_S2A <- read.csv("processed_data/FileS3_lifetimeFertility.csv", stringsAsFactors=FALSE)
+data_S2A <- read.csv("processed_data/FileS3_lifetimeFecundity.csv", stringsAsFactors=FALSE)
 
-bar_S2A <- data_S2A %>% dplyr::mutate(Strain=ifelse(strain %in% c("N2","CB4856"),strain,"Other strains"))
+bar_S2A <- data_S2A %>% #dplyr::mutate(Strain=ifelse(strain %in% c("N2","CB4856"),strain,"Other strains"))
+dplyr::mutate(geno=ifelse(strain %in% c("N2","CB4856"),strain,genotype)) # revised 
+
+bar_S2A$genos <- factor(bar_S2A$geno,levels = c("swept","divergent","N2","CB4856"))
 
 
-fig2a <- ggplot(bar_S2A,aes(x=fct_reorder(strain, mean_b),y=mean_b,fill=Strain)) + 
+
+fig2a <- ggplot(bar_S2A,aes(x=fct_reorder(strain, mean_b),y=mean_b,fill=genos)) + 
   geom_bar(stat='identity',color="gray51",size=.3) + 
-  scale_fill_manual(values=c("N2"="orange","CB4856"="blue","Other strains"="gray88")) + 
+  #scale_fill_manual(values=c("N2"="orange","CB4856"="blue","Other strains"="gray88")) + 
+  scale_fill_manual(values=c("N2"="orange","CB4856"="blue","swept"="gold2","divergent"="plum4")) + # revised
   geom_errorbar(aes(ymin=mean_b-se_b, ymax=mean_b+se_b),
                 cex = 0.2,width=.2,                   
                 position=position_dodge(.6)) + theme_bw() +
@@ -114,7 +118,7 @@ fig2a <- ggplot(bar_S2A,aes(x=fct_reorder(strain, mean_b),y=mean_b,fill=Strain))
         legend.background = element_rect(fill=alpha('white', 0)),
         legend.position=c(0.3,0.9)) +
   xlab("Strain") + 
-  ylab("Lifetime fertility")  + 
+  ylab("Lifetime fecundity")  + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 370)) + guides(fill = guide_legend(nrow = 1))
 
 
@@ -155,7 +159,7 @@ fig2b_l <- ggplot(box_swept,aes(x=Genotypes,y=mean_b)) +
         legend.position="bottom",  
         legend.spacing.x = unit(0.1, 'cm'),
         text=element_text(family="Helvetica"))+  
-  ylab("Fertility")  + 
+  ylab("Fecundity")  + 
   xlab("Genotype")  + 
   scale_y_continuous(limits =c(100,400),breaks=seq(100,400,50)) +
   stat_compare_means(comparisons = list(c("swept","divergent")),label.y = c(350),label = "p.signif")+
@@ -171,7 +175,7 @@ fig2b_l <- ggplot(box_swept,aes(x=Genotypes,y=mean_b)) +
 
 ## Figure 2B by day ######
 
-data_S2B <- read.csv("processed_data/FileS4_dailyFertility.csv", stringsAsFactors=FALSE)
+data_S2B <- read.csv("processed_data/FileS4_dailyFecundity.csv", stringsAsFactors=FALSE) 
 
 data_S2B$Genotypes <- factor(data_S2B$genotype,levels = c("swept","divergent"))
 
@@ -224,9 +228,9 @@ fig_2 <- cowplot::plot_grid(fig2a, fig2b,
                             label_size = 12, 
                             label_fontfamily="Helvetica",
                             axis = "lr",
-                            rel_heights =  c(1,2))
+                            rel_heights =  c(1.1,2))
 
-ggsave(fig_2, filename = paste( "figures/Fig_2.png",sep=""), units = "mm",height = 140, width = 170)
+ggsave(fig_2, filename = paste( "figures/Fig_2.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 140, width = 170)
 
 
 
@@ -262,7 +266,7 @@ fig_3 <- cowplot::plot_grid(fig3a,fig3b,
                             axis = "l")
 
 
-ggsave(fig_3, filename = paste( "figures/Fig_3.png",sep=""), units = "mm",height = 130, width = 170)
+ggsave(fig_3, filename = paste( "figures/Fig_3.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 130, width = 170)
 
 
 
@@ -284,7 +288,7 @@ box_swept_loc$loc = factor(box_swept_loc$Location, levels = c("Hawaii","North Am
 
 my_comparisons <- list( c("Hawaii", "North America"), c("Hawaii", "Europe"))
 
-cc<-compare_means(mean_b ~ loc,  data = box_swept_loc)
+cc<-ggpubr::compare_means(mean_b ~ loc,  data = box_swept_loc)
 
 
 geo_box <- ggplot(box_swept_loc,aes(x=loc,y=mean_b)) + 
@@ -297,6 +301,8 @@ geo_box <- ggplot(box_swept_loc,aes(x=loc,y=mean_b)) +
   stat_compare_means(comparisons = my_comparisons, 
                      ref.group = "Hawaii",
                      label = "p.signif",
+                     symnum.args = list(cutpoints = c(0, 0.0001, 0.001,1), 
+                                         symbols = c("****", "**","ns")),
                      label.y = c(320,350)) +                      
   scale_fill_manual(values=c("swept"="gold2","divergent"="plum4")) + 
   theme_bw() +
@@ -310,13 +316,13 @@ geo_box <- ggplot(box_swept_loc,aes(x=loc,y=mean_b)) +
         legend.spacing.x = unit(5, 'mm'),
         panel.grid = ggplot2::element_blank(),
         text=element_text(family="Helvetica"))+  
-  ylab("Lifetime fertility")  + xlab("Sampling location")+
+  ylab("Lifetime fecundity")  + xlab("Sampling location")+
   labs(color="Sampling location",fill="Swept ratio") +
   ylim(100,370)
 
 
 
-ggsave(geo_box, filename = paste( "figures/Fig_4.png",sep=""), units = "mm",height = 90, width =140)
+ggsave(geo_box, filename = paste( "figures/Fig_4.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 90, width =140)
 
 
 
@@ -371,7 +377,7 @@ plt_wolrd <- ggplot()+
   guides(fill = guide_legend(label.position = "bottom")) +
   labs(fill='Number of swept chromosomes')
 
-ggsave(plt_wolrd, filename = paste("figures/Fig_S1.png",sep = ""), units = "mm",height = 100, width = 170)
+ggsave(plt_wolrd, filename = paste("figures/Fig_S1.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 100, width = 170)
 
 
 
@@ -412,7 +418,7 @@ figS2b <- ggplot(data_SS2,aes(x=Genotypes,y=mean_b)) +
         panel.grid = ggplot2::element_blank(),
         legend.position="right",  
         text=element_text(family="Helvetica"))+  
-  ylab("Lifetime fertility")  + 
+  ylab("Lifetime fecundity")  + 
   xlab("Genotype")  + 
   scale_y_continuous(limits =c(100,400),breaks=seq(100,400,50)) +
   stat_compare_means(comparisons = list(c("swept","divergent")),label.y = c(350),label = "p.signif")+
@@ -426,7 +432,7 @@ figS2b <- ggplot(data_SS2,aes(x=Genotypes,y=mean_b)) +
   guides(fill=guide_legend(nrow=2,byrow=TRUE))
 
 
-ggsave(figS2b, filename = paste("figures/Fig_S2.png",sep = ""), units = "mm",height = 80, width = 170)
+ggsave(figS2b, filename = paste("figures/Fig_S2.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 80, width = 170)
 
 
 
@@ -462,7 +468,7 @@ figS3 <- ggplot2::ggplot(data_SS3) +
 
 
   
-ggsave(figS3, filename = paste( "figures/Fig_S3.png",sep=""), units = "mm",height = 80, width = 100)
+ggsave(figS3, filename = paste( "figures/Fig_S3.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 80, width = 100)
 
 
 ##########################################
@@ -522,7 +528,7 @@ figS4 <- cowplot::plot_grid(figS4_main ,figS4_legend,
 
 
 
-ggsave(figS4, filename = paste( "figures/Fig_S4.png",sep=""), units = "mm",height = 150, width = 170)
+ggsave(figS4, filename = paste( "figures/Fig_S4.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 150, width = 170)
 
 
 
@@ -550,7 +556,7 @@ data_SS5B <- read.csv("processed_data/FileS13_pxg236.csv", stringsAsFactors=FALS
 
 figS5_B <- pxg_plot(data_SS5B) +
   theme(legend.position = "none")  +  
-  ylab("Fertility") 
+  ylab("Fecundity") 
 
 
 ## Figure S5 C interval haplotype #####
@@ -606,7 +612,7 @@ figS5 <- cowplot::plot_grid(figS5_A ,figS5_BC,
 
 
 
-ggsave(figS5, filename = paste( "figures/Fig_S5.png",sep=""), units = "mm",height = 120, width = 170)
+ggsave(figS5, filename = paste( "figures/Fig_S5.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
 
 
 
@@ -632,7 +638,7 @@ data_SS6B$peakmarker <- factor(data_SS6B$marker, levels = c(" Parental", "II:364
 
 figS6_B <- lk_pxg_plot(data_SS6B) + 
   ggplot2::facet_wrap(~peakmarker, ncol = 2, scales = "free_x") + 
-  ggplot2::labs(x = "", y = paste("Fertility","(1% H2O)",sep = " "))
+  ggplot2::labs(x = "", y = paste("Fecundity","(1% H2O)",sep = " "))
 
 
 
@@ -642,10 +648,11 @@ figS6 <- cowplot::plot_grid(figS6_A,figS6_B,
                             ncol = 1,
                             label_size = 12, 
                             label_fontfamily="Helvetica",
+                            align = "v",
                             axis = "lr")
 
 
-ggsave(figS6, filename = paste( "figures/Fig_S6.png",sep=""), units = "mm",height = 120, width = 170)
+ggsave(figS6, filename = paste( "figures/Fig_S6.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
 
 
 
@@ -671,7 +678,7 @@ data_SS7B$peakmarker <- factor(data_SS7B$marker, levels = c(" Parental",  "IV:90
 
 figS7_B <- lk_pxg_plot(data_SS7B) + 
   ggplot2::facet_wrap(~peakmarker, ncol = 3, scales = "free_x") + 
-  ggplot2::labs(x = "", y = paste("Fertility","(1% DMSO)",sep = " "))
+  ggplot2::labs(x = "", y = paste("Fecundity","(1% DMSO)",sep = " "))
 
 
 
@@ -681,10 +688,11 @@ figS7 <- cowplot::plot_grid(figS7_A,figS7_B,
                             ncol = 1,
                             label_size = 12, 
                             label_fontfamily="Helvetica",
+                            align = "v",
                             axis = "lr")
 
 
-ggsave(figS7, filename = paste( "figures/Fig_S7.png",sep=""), units = "mm",height = 120, width = 170)
+ggsave(figS7, filename = paste( "figures/Fig_S7.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
 
 
 
@@ -714,7 +722,8 @@ data_SS8B$peakmarker <- factor(data_SS8B$marker, levels = c(" Parental", "II:896
 
 figS8_B <- lk_pxg_plot(data_SS8B) + 
   ggplot2::facet_wrap(~peakmarker, ncol = 5, scales = "free_x") + 
-  ggplot2::labs(x = "", y = paste("Fertility","(0.5% DMSO)",sep = " "))
+  ggplot2::labs(x = "", y = paste("Fecundity","(0.5% DMSO)",sep = " "))+ 
+  ggplot2::theme(axis.text.x = ggplot2::element_text(size = 10, color = "black"))
 
 
 
@@ -724,10 +733,12 @@ figS8 <- cowplot::plot_grid(figS8_A,figS8_B,
                             ncol = 1,
                             label_size = 12, 
                             label_fontfamily="Helvetica",
-                            axis = "lr")
+                            axis = "lr",
+                            align = "v",
+                            rel_heights =  c(1,1.1))
 
 
-ggsave(figS8, filename = paste( "figures/Fig_S8.png",sep=""), units = "mm",height = 120, width = 170)
+ggsave(figS8, filename = paste( "figures/Fig_S8.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
 
 
 
@@ -738,6 +749,7 @@ ggsave(figS8, filename = paste( "figures/Fig_S8.png",sep=""), units = "mm",heigh
 #           Figure 5                     #
 #       Mapping summary                  #
 ##########################################
+
 
 
 
@@ -779,9 +791,9 @@ gwa_sum <- ggplot(fertility_peak_sum_gwa)+
         legend.spacing.x = unit(5, 'mm'),
         plot.margin = unit(c(0, 0, 0, 0), "mm"),
         panel.grid = ggplot2::element_blank(),
-         panel.spacing.x=unit(0.05, "lines"),
-         legend.margin=margin(0,0,0,-10),
-         text=element_text(family="Helvetica")) 
+        panel.spacing.x=unit(0.05, "lines"),
+        legend.margin=margin(0,0,0,-10),
+        text=element_text(family="Helvetica")) 
 
 
 fertility_peak_sum_lk <- bind_rows(cis_1h2o,cis_05dmso,cis_1dmso) %>% 
@@ -828,7 +840,7 @@ lkm_sum <- ggplot(fertility_peak_sum_lk)+
 
 fig5 <- cowplot::plot_grid(gwa_sum,
                            lkm_sum,
-                         #  labels = c('A', 'B'), 
+                           #  labels = c('A', 'B'), 
                            label_size = 10, 
                            label_fontfamily="Helvetica",
                            rel_heights = c(0.93,1),
@@ -837,5 +849,5 @@ fig5 <- cowplot::plot_grid(gwa_sum,
                            nrow = 2)
 
 
-ggsave(fig5, filename = paste( "figures/Fig_5.png",sep=""), units = "mm",height = 100, width =170)
+ggsave(fig5, filename = paste( "figures/Fig_5.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 100, width =170)
 

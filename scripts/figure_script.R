@@ -444,7 +444,7 @@ ggsave(figS2b, filename = paste("figures/Fig_S2.pdf",sep = ""), device = cairo_p
 
 
 ## Figure S3B GWAS EIGEN QTL LD #####
-
+        
 data_SS3 <- read.csv("processed_data/FileS10_LD121.csv", stringsAsFactors=FALSE)
 
 
@@ -478,7 +478,7 @@ ggsave(figS3, filename = paste( "figures/Fig_S3.pdf",sep = ""), device = cairo_p
 
 
 ## Figure S4 QTL interval haplotype #####
-
+  
 SS4_File <- read.csv("processed_data/FileS11_QTLhaplotype121.csv", stringsAsFactors=FALSE)
 
 
@@ -840,9 +840,6 @@ lkm_sum <- ggplot(fertility_peak_sum_lk)+
 
 fig5 <- cowplot::plot_grid(gwa_sum,
                            lkm_sum,
-                           #  labels = c('A', 'B'), 
-                           label_size = 10, 
-                           label_fontfamily="Helvetica",
                            rel_heights = c(0.93,1),
                            axis = "lr",
                            align = "v",

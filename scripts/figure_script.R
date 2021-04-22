@@ -1,8 +1,6 @@
 setwd(glue::glue("{dirname(rstudioapi::getActiveDocumentContext()$path)}/"))
 setwd("../")
 
-
-
 ### load R packages####
 
 library(tidyverse)
@@ -435,20 +433,49 @@ figS2b <- ggplot(data_SS2,aes(x=Genotypes,y=mean_b)) +
 ggsave(figS2b, filename = paste("figures/Fig_S2.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 80, width = 170)
 
 
+##########################################
+#           Figure S3                    #
+#      intrinsic growth rate             #
+##########################################
+
+figS3 <- ggplot(data_S2B,aes(x=age,y=intrinsic_growth_rate))+
+  geom_line(aes(group=strain,color=Genotypes),size=0.3,alpha=0.5) + 
+  scale_color_manual(values=c("swept"="gold2","divergent"="plum4"))+ 
+  theme_bw() + 
+  theme(axis.text.y =  element_text(size=12,  color = "black"),
+        axis.text.x =  element_text(size=12,  color = "black"),
+        axis.title.x = element_text(size=12,  color = "black"),
+        legend.text = element_text(size=12,  color = "black"),
+        legend.title =   element_blank(),
+        axis.title =  element_text(size=12,  color = "black"),
+        strip.text = element_text(size=12, vjust = 1,  color = "black"),
+        strip.background = element_blank(), 
+        panel.grid = ggplot2::element_blank(),
+        legend.spacing.x = unit(0.1, 'cm'),
+        text=element_text(family="Helvetica"))+  
+  ylab("Intrisic growth rate")  + 
+  xlab("Age") + 
+  ylim(0,1.5)
+
+
+
+ggsave(figS3, filename = paste( "figures/Fig_S3.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 80, width = 100)
+
+
 
 
 ##########################################
-#           Figure S3                    #
+#           Figure S4                    #
 #               LD                       #
 ##########################################
 
 
-## Figure S3B GWAS EIGEN QTL LD #####
-        
+## Figure S4 GWAS EIGEN QTL LD #####
+
 data_SS3 <- read.csv("processed_data/FileS10_LD121.csv", stringsAsFactors=FALSE)
 
 
-figS3 <- ggplot2::ggplot(data_SS3) +
+figS4 <- ggplot2::ggplot(data_SS3) +
   ggplot2::aes(x = factor(SNP1, levels = unique(SNP1), ordered = T), y = factor(SNP2, levels = unique(SNP1), ordered = T)) +
   ggplot2::geom_tile(ggplot2::aes(fill = r2)) +
   ggplot2::geom_text(ggplot2::aes(label = signif(r2, 3)),  size = 12*5/14) +
@@ -468,22 +495,22 @@ figS3 <- ggplot2::ggplot(data_SS3) +
 
 
   
-ggsave(figS3, filename = paste( "figures/Fig_S3.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 80, width = 100)
+ggsave(figS4, filename = paste( "figures/Fig_S4.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 80, width = 100)
 
 
 ##########################################
-#           Figure S4                    #
+#           Figure S5                    #
 #      QTL interval haplotype            #
 ##########################################
 
 
-## Figure S4 QTL interval haplotype #####
-  
+## Figure S5 QTL interval haplotype #####
+
 SS4_File <- read.csv("processed_data/FileS11_QTLhaplotype121.csv", stringsAsFactors=FALSE)
 
 
 ####ref_swept ##
-figSS4_ref <- iv_hap(subset(SS4_File,ALL=="REF")) +
+figSS5_ref <- iv_hap(subset(SS4_File,ALL=="REF")) +
   ylab("REF") +
   facet_wrap_custom(.~facet_marker, scales="free",nrow = 1,
                     scale_overrides = list(
@@ -494,7 +521,7 @@ figSS4_ref <- iv_hap(subset(SS4_File,ALL=="REF")) +
 
 
 ####alt_swept ##
-figSS4_alt <- iv_hap(subset(SS4_File,ALL=="ALT")) +
+figSS5_alt <- iv_hap(subset(SS4_File,ALL=="ALT")) +
   ylab("ALT")  +
   facet_wrap_custom(.~facet_marker, scales="free",nrow = 1,
                     scale_overrides = list(
@@ -512,58 +539,58 @@ figSS4_alt <- iv_hap(subset(SS4_File,ALL=="ALT")) +
 
 #### cow s4 ##
 
-figS4_legend <- get_legend(figSS4_alt)
+figS5_legend <- get_legend(figSS5_alt)
 
 
-figS4_main  <- cowplot::plot_grid(figSS4_ref ,
-                                  figSS4_alt + theme(legend.position="none"),
+figS5_main  <- cowplot::plot_grid(figSS5_ref ,
+                                  figSS5_alt + theme(legend.position="none"),
                                   nrow = 2,ncol = 1,
                                   axis = "lr")
 
 
 
-figS4 <- cowplot::plot_grid(figS4_main ,figS4_legend,
+figS5 <- cowplot::plot_grid(figS5_main ,figS5_legend,
                             nrow = 2,ncol = 1,
                             rel_heights = c(10,1.5))
 
 
 
-ggsave(figS4, filename = paste( "figures/Fig_S4.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 150, width = 170)
+ggsave(figS5, filename = paste( "figures/Fig_S5.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 150, width = 170)
 
 
 
 
 
 ##########################################
-#           Figure S5                    #
+#           Figure S6                    #
 #          norm.n GWA dmso                #
 ##########################################
 
 
-## Figure S5 A manhanton #####
+## Figure S6 A manhanton #####
 
 data_SS5A <- read.csv("processed_data/FileS12_GWA236.csv", stringsAsFactors=FALSE)
 
-figS5_A <- manhaplot(data_SS5A) + 
+figS6_A <- manhaplot(data_SS5A) + 
   scale_y_continuous(expand = c(0, 0), limits = c(0, 6)) 
 
 
-## Figure S5 B pxg #####
+## Figure S6 B pxg #####
 
 
 data_SS5B <- read.csv("processed_data/FileS13_pxg236.csv", stringsAsFactors=FALSE)
 
 
-figS5_B <- pxg_plot(data_SS5B) +
+figS6_B <- pxg_plot(data_SS5B) +
   theme(legend.position = "none")  +  
   ylab("Fecundity") 
 
 
-## Figure S5 C interval haplotype #####
+## Figure S6 C interval haplotype #####
 
 data_SS5C <- read.csv("processed_data/FileS14_QTLhaplotype236.csv", stringsAsFactors=FALSE)
 
-figS5C_ref <- iv_hap(subset(data_SS5C,ALL=="REF")) +
+figS6C_ref <- iv_hap(subset(data_SS5C,ALL=="REF")) +
   ylab("REF") +
   theme( plot.margin = unit(c(0, 2, 0, 10), "mm"))+
   facet_wrap_custom(.~facet_marker, scales="free",nrow = 1, 
@@ -572,7 +599,7 @@ figS5C_ref <- iv_hap(subset(data_SS5C,ALL=="REF")) +
                       scale_override(1, scale_x_continuous(breaks = c(3852481/1E6, 4831537/1E6, 5424864/1E6),labels = scales::number_format(accuracy = 0.1)))
                     ))
 
-figS5C_alt <- iv_hap(subset(data_SS5C,ALL=="ALT")) +
+figS6C_alt <- iv_hap(subset(data_SS5C,ALL=="ALT")) +
   ylab("ALT")  +
   theme( strip.text = element_blank(),
          axis.text =  element_text(size=12,  color = "black"),
@@ -587,12 +614,12 @@ figS5C_alt <- iv_hap(subset(data_SS5C,ALL=="ALT")) +
 
 #### cow s5 ##
 
-figS5_C <- cowplot::plot_grid(figS5C_ref ,figS5C_alt,
+figS6_C <- cowplot::plot_grid(figS6C_ref ,figS6C_alt,
                               nrow = 2,ncol = 1,
                               axis = "lr",
                               rel_heights = c(4,1))
 
-figS5_BC <- cowplot::plot_grid(figS5_B,figS5_C,
+figS6_BC <- cowplot::plot_grid(figS6_B,figS6_C,
                                 nrow = 1,ncol = 2,
                                 labels = c("B","C"), 
                                 label_size = 12, 
@@ -601,7 +628,7 @@ figS5_BC <- cowplot::plot_grid(figS5_B,figS5_C,
 
 
 
-figS5 <- cowplot::plot_grid(figS5_A ,figS5_BC,
+figS6 <- cowplot::plot_grid(figS6_A ,figS6_BC,
                             nrow = 2,ncol = 1,
                             labels = c("A",""), 
                             label_size = 12, 
@@ -612,21 +639,21 @@ figS5 <- cowplot::plot_grid(figS5_A ,figS5_BC,
 
 
 
-ggsave(figS5, filename = paste( "figures/Fig_S5.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
+ggsave(figS6, filename = paste( "figures/Fig_S6.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
 
 
 
 
 
 ##########################################
-#           Figure S6                    #
+#           Figure S7                    #
 #      norm.n linkage-mapping 1% H2O     #
 ##########################################
 
 
 load("processed_data/FileS15_lk1h2o.RData")
 
-figS6_A <- lk_lod_plot(lkmap_1h2o,cis_1h2o)
+figS7_A <- lk_lod_plot(lkmap_1h2o,cis_1h2o)
 
 
 
@@ -636,49 +663,9 @@ data_SS6B <- read.csv("processed_data/FileS16_pxg1h2o.csv", stringsAsFactors=FAL
 data_SS6B$peakmarker <- factor(data_SS6B$marker, levels = c(" Parental", "II:3646789"))
 
 
-figS6_B <- lk_pxg_plot(data_SS6B) + 
+figS7_B <- lk_pxg_plot(data_SS6B) + 
   ggplot2::facet_wrap(~peakmarker, ncol = 2, scales = "free_x") + 
   ggplot2::labs(x = "", y = paste("Fecundity","(1% H2O)",sep = " "))
-
-
-
-figS6 <- cowplot::plot_grid(figS6_A,figS6_B,
-                            labels = c("A","B"), 
-                            nrow = 2,
-                            ncol = 1,
-                            label_size = 12, 
-                            label_fontfamily="Helvetica",
-                            align = "v",
-                            axis = "lr")
-
-
-ggsave(figS6, filename = paste( "figures/Fig_S6.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
-
-
-
-
-##########################################
-#           Figure S7                    #
-#      norm.n linkage-mapping 1% DMSO    #
-##########################################
-
-
-load("processed_data/FileS17_lk1dmso.RData")
-
-figS7_A <- lk_lod_plot(lkmap_1dmso,cis_1dmso)
-
-
-
-data_SS7B <- read.csv("processed_data/FileS18_pxg1dmso.csv", stringsAsFactors=FALSE)
-
-
-data_SS7B$peakmarker <- factor(data_SS7B$marker, levels = c(" Parental",  "IV:9031007" ,"V:11883496"  ))
-
-
-
-figS7_B <- lk_pxg_plot(data_SS7B) + 
-  ggplot2::facet_wrap(~peakmarker, ncol = 3, scales = "free_x") + 
-  ggplot2::labs(x = "", y = paste("Fecundity","(1% DMSO)",sep = " "))
 
 
 
@@ -697,19 +684,59 @@ ggsave(figS7, filename = paste( "figures/Fig_S7.pdf",sep = ""), device = cairo_p
 
 
 
+##########################################
+#           Figure S8                    #
+#      norm.n linkage-mapping 1% DMSO    #
+##########################################
+
+
+load("processed_data/FileS17_lk1dmso.RData")
+
+figS8_A <- lk_lod_plot(lkmap_1dmso,cis_1dmso)
+
+
+
+data_SS7B <- read.csv("processed_data/FileS18_pxg1dmso.csv", stringsAsFactors=FALSE)
+
+
+data_SS7B$peakmarker <- factor(data_SS7B$marker, levels = c(" Parental",  "IV:9031007" ,"V:11883496"  ))
+
+
+
+figS8_B <- lk_pxg_plot(data_SS7B) + 
+  ggplot2::facet_wrap(~peakmarker, ncol = 3, scales = "free_x") + 
+  ggplot2::labs(x = "", y = paste("Fecundity","(1% DMSO)",sep = " "))
+
+
+
+figS8 <- cowplot::plot_grid(figS8_A,figS8_B,
+                            labels = c("A","B"), 
+                            nrow = 2,
+                            ncol = 1,
+                            label_size = 12, 
+                            label_fontfamily="Helvetica",
+                            align = "v",
+                            axis = "lr")
+
+
+ggsave(figS8, filename = paste( "figures/Fig_S8.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
+
+
+
+
 
 
 
 
 ##########################################
-#           Figure S8                    #
+#           Figure S9                    #
 #      norm.n linkage-mapping 0.5% DMSO  #
 ##########################################
 
 
 load("processed_data/FileS19_lk05dmso.RData")
 
-figS8_A <- lk_lod_plot(lkmap_05dmso,cis_05dmso)
+figS9_A <- lk_lod_plot(lkmap_05dmso,cis_05dmso)
 
 
 
@@ -720,14 +747,14 @@ data_SS8B$peakmarker <- factor(data_SS8B$marker, levels = c(" Parental", "II:896
 
 
 
-figS8_B <- lk_pxg_plot(data_SS8B) + 
+figS9_B <- lk_pxg_plot(data_SS8B) + 
   ggplot2::facet_wrap(~peakmarker, ncol = 5, scales = "free_x") + 
   ggplot2::labs(x = "", y = paste("Fecundity","(0.5% DMSO)",sep = " "))+ 
   ggplot2::theme(axis.text.x = ggplot2::element_text(size = 10, color = "black"))
 
 
 
-figS8 <- cowplot::plot_grid(figS8_A,figS8_B,
+figS9 <- cowplot::plot_grid(figS9_A,figS9_B,
                             labels = c("A","B"), 
                             nrow = 2,
                             ncol = 1,
@@ -738,7 +765,7 @@ figS8 <- cowplot::plot_grid(figS8_A,figS8_B,
                             rel_heights =  c(1,1.1))
 
 
-ggsave(figS8, filename = paste( "figures/Fig_S8.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
+ggsave(figS9, filename = paste( "figures/Fig_S9.pdf",sep = ""), device = cairo_pdf, units = "mm",height = 120, width = 170)
 
 
 
@@ -840,6 +867,9 @@ lkm_sum <- ggplot(fertility_peak_sum_lk)+
 
 fig5 <- cowplot::plot_grid(gwa_sum,
                            lkm_sum,
+                           #  labels = c('A', 'B'), 
+                        #   label_size = 10, 
+                          # label_fontfamily="Helvetica",
                            rel_heights = c(0.93,1),
                            axis = "lr",
                            align = "v",

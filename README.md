@@ -1,5 +1,7 @@
 # swept_broods
 
+["Natural variation in fecundity is correlated with species-wide levels of divergence in Caenorhabditis elegans"](https://academic.oup.com/g3journal/article/11/8/jkab168/6275220)
+
 
 figures:
 
